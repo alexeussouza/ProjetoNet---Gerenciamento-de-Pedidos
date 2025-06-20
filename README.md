@@ -1,4 +1,3 @@
-
 # 📦 Sistema de Pedidos - E-commerce B2C
 
 Projeto de um sistema de pedidos para e-commerce B2C, desenvolvido como parte de prova técnica. O sistema é composto por backend em .NET, frontend em React + TypeScript, banco de dados PostgreSQL e orquestração via Docker Compose.
@@ -151,7 +150,7 @@ docker exec -it frontend ping authservice
 
 - **Node.js:** Versão mínima recomendada: **v18+**
 
-> Node 16 não possui suporte nativo ao módulo `crypto` em ESM puro.
+> Node 16 não possui suporte nativo ao módulo `crypto` em ESM puro, use a versao 20 ou superior.
 
 - **CORS:** Configurado no `Program.cs` de cada serviço via:
 
