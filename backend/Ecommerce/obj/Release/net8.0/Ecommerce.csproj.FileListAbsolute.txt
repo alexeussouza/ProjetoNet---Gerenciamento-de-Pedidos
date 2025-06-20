@@ -1,0 +1,13 @@
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\bin\Release\net8.0\Ecommerce.deps.json
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\bin\Release\net8.0\Ecommerce.dll
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\bin\Release\net8.0\Ecommerce.pdb
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.csproj.AssemblyReference.cache
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.GeneratedMSBuildEditorConfig.editorconfig
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.AssemblyInfoInputs.cache
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.AssemblyInfo.cs
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.csproj.CoreCompileInputs.cache
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.sourcelink.json
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.dll
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\refint\Ecommerce.dll
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\Ecommerce.pdb
+F:\Desenvolvimento\Projetos\.Net\Prova_01411\backend\Ecommerce\obj\Release\net8.0\ref\Ecommerce.dll
