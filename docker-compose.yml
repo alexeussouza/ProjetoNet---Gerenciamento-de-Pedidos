@@ -1,0 +1,113 @@
+name: ecommerce
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - authservice
+      - orderservice
+      - productservice
+    networks:
+      - ecommerce_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  authservice:
+    container_name: authservice
+    build:
+      context: .
+      dockerfile: backend/AuthService/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    depends_on:
+      - postgres
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ecommerce;Username=postgres;Password=postgres
+    networks:
+      - ecommerce_network
+
+  orderservice:
+    container_name: orderservice
+    build:
+      context: .
+      dockerfile: backend/OrderService/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ecommerce;Username=postgres;Password=postgres
+    networks:
+      - ecommerce_network
+
+  productservice:
+    container_name: productservice
+    build:
+      context: .
+      dockerfile: backend/ProductService/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ecommerce;Username=postgres;Password=postgres
+    networks:
+      - ecommerce_network
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - nginx
+    networks:
+      - ecommerce_network
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce_network:
+    name: ecommerce
+    external: false

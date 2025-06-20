@@ -1,0 +1,30 @@
+.header {
+  background-color: #343a40;
+  color: white;
+  padding: 1rem;
+}
+
+.header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header a {
+  color: white;
+  margin-right: 1rem;
+  text-decoration: none;
+}
+
+.header button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.header button:hover {
+  background-color: #c82333;
+}

@@ -1,0 +1,36 @@
+.products-container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 1.5rem;
+}
+
+.products-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.products-list {
+  list-style: none;
+  padding: 0;
+}
+
+.products-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.products-list button {
+  padding: 0.4rem 0.8rem;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.products-list button:hover {
+  background-color: #138496;
+}
