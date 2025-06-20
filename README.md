@@ -1,18 +1,21 @@
-
 # 📦 Sistema de Pedidos - E-commerce B2C
 
 Projeto de um sistema de pedidos para e-commerce B2C, desenvolvido como parte de prova técnica. O sistema é composto por backend em .NET, frontend em React + TypeScript, banco de dados PostgreSQL e orquestração via Docker Compose.
 
+---
+
 ## 🚀 Tecnologias Utilizadas
 
-- ⚙️ Backend: C# (.NET 8)
-- 🌐 Frontend: React + TypeScript (Vite)
-- 🐘 Banco de Dados: PostgreSQL (Docker)
-- 🔒 Autenticação: JWT
-- 🐳 Containerização: Docker e Docker Compose
-- 📦 NGINX como API Gateway
-- 🗂️ Biblioteca Compartilhada: Ecommerce (Models, DTOs, Enums)
-- ✅ API RESTful
+- ⚙️ **Backend**: C# (.NET 8)
+- 🌐 **Frontend**: React + TypeScript (Vite)
+- 🐘 **Banco de Dados**: PostgreSQL (Docker)
+- 🔒 **Autenticação**: JWT
+- 🐳 **Containerização**: Docker e Docker Compose
+- 📦 **NGINX como API Gateway**
+- 🗂️ **Biblioteca Compartilhada**: Ecommerce (Models, DTOs, Enums)
+- ✅ **API RESTful**
+
+---
 
 ## 📜 Funcionalidades
 
@@ -22,8 +25,10 @@ Projeto de um sistema de pedidos para e-commerce B2C, desenvolvido como parte de
 - 💳 Simulação de pagamento (80% sucesso, 20% falha)
 - 🏪 Reserva de estoque
 - 📑 Listagem e consulta de pedidos
-- 🔒 Endpoints protegidos
+- 🔒 Endpoints protegidos via JWT
 - ✅ Validação de entradas e retorno de códigos HTTP apropriados
+
+---
 
 ## ⚙️ Como Executar o Projeto
 
@@ -32,52 +37,42 @@ Projeto de um sistema de pedidos para e-commerce B2C, desenvolvido como parte de
 ```bash
 git clone https://github.com/SENAI-SD/prova-csharp-pleno-01411-2025-722.643.141-68.git
 cd prova-csharp-pleno-01411-2025-722.643.141-68
-```
 
 ### 🐳 2. Subir os containers
 Certifique-se de ter Docker e Docker Compose instalados.
 
-```bash
+bash
 docker compose up -d --build
-```
+Esse comando irá:
 
-Este comando irá:
-- Construir imagens do AuthService, OrderService, ProductService e Frontend.
-- Subir containers de PostgreSQL e NGINX.
-- Mapear corretamente as portas.
+Construir imagens do AuthService, OrderService, ProductService e Frontend.
+
+Subir containers de PostgreSQL e NGINX.
+
+Mapear corretamente as portas e volumes necessários.
+
+> 💡 O arquivo nginx.conf é montado no container como volume em /etc/nginx/nginx.conf.
 
 ### 🚀 3. Backend (.NET)
-As migrations já são aplicadas automaticamente via Docker Compose.
+As migrations são aplicadas automaticamente.
 
-Se desejar rodar manualmente:
+Se necessário, rode manualmente:
 
-```bash
+bash
 docker exec -it authservice dotnet ef database update
-```
-
 ### 🌐 4. Frontend (React + Vite)
-
-#### Instalar dependências
-
-Acesse a pasta `frontend/` e execute:
-
-```bash
+bash
+cd frontend
 npm install
-```
-
-#### Iniciar manualmente (se quiser rodar local sem docker)
-
-```bash
 npm run dev
-```
+Por padrão:
 
-Por padrão, estará disponível em:
+localhost:5173 (modo dev)
 
-[http://localhost:5173](http://localhost:5173)
+localhost (via NGINX no container)
 
-Obs: Pelo Docker Compose, o frontend já é servido via NGINX em [http://localhost](http://localhost)
-
-## 📂 Estrutura do Projeto
+---
+### 📂 Estrutura do Projeto
 
 ```
 prova-csharp-pleno-01411-2025-722.643.141-68/
@@ -85,116 +80,130 @@ prova-csharp-pleno-01411-2025-722.643.141-68/
 │   ├── AuthService/
 │   ├── OrderService/
 │   ├── ProductService/
-│   └── Ecommerce/       # Biblioteca compartilhada (Models, DTOs, Enums)
+│   └── Ecommerce/       # Biblioteca compartilhada
 ├── frontend/
 ├── nginx/
 │   └── nginx.conf
 ├── docker-compose.yml
 └── README.md
 ```
+---
 
-## 🔧 Testes de Comunicação
+##🔧 Configuração do NGINX (nginx.conf)
+### ✅ Objetivo
+Servir como gateway reverso.
 
-### CURL
+Interceptar requisições OPTIONS com CORS válido (pré-flight).
 
-- 📌 Registrar usuário
+Repassar POST, GET e outros métodos para os containers corretos.
 
-```bash
-curl -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d '{"name":"Alex","email":"alex@teste.com","password":"123456"}'
-```
+Evitar problemas de rewrite e conflitos com o backend.
 
-- 📌 Login
+### ✨ Exemplo de bloco funcional (login)
+nginx
+location ^~ /api/auth/login {
+    if ($request_method = OPTIONS) {
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        add_header 'Access-Control-Max-Age' 1728000 always;
+        add_header 'Content-Length' 0;
+        add_header 'Content-Type' 'text/plain; charset=UTF-8';
+        return 204;
+    }
 
-```bash
-curl -X POST http://localhost:5000/api/auth/login -H "Content-Type: application/json" -d '{"email":"alex@teste.com","password":"123456"}'
-```
+    proxy_pass http://authservice;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
 
-- 📌 Listar produtos
+### 📌 Demais rotas
+/api/orders/ → orderservice
 
-```bash
+/api/products/ → productservice
+
+/api/auth/* genérico → authservice
+
+---
+
+## 🔐 JWT - Segurança
+✔ Requisitos
+Algoritmo HS256
+
+Tamanho mínimo da chave secreta: 256 bits / 32 caracteres
+
+Exemplo válido:
+
+json
+"JwtSettings": {
+  "Key": "super-secret-key-at-least-32-characters!"
+}
+Evita erros como:
+
+IDX10720: key size must be greater than 256 bits
+
+---
+
+## 🧪 Testes de Comunicação
+### ✅ Registro
+bash
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alex","email":"alex@teste.com","password":"123456"}'
+### ✅ Login
+bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"alex@teste.com","password":"123456"}'
+### ✅ Produtos
+bash
 curl -H "Authorization: Bearer SEU_TOKEN" http://localhost:5002/api/products
-```
 
-## 📝 Comandos Úteis
+###📝 Comandos Úteis
+bash
+docker compose down                          # Parar e remover containers
+docker compose build --no-cache              # Build do zero
+docker ps                                    # Ver containers ativos
+docker logs authservice                      # Ver logs do backend
+docker exec -it frontend ping authservice    # Testar comunicação interna
 
-- Parar e remover containers
-
-```bash
-docker compose down
-```
-
-- Rebuild sem cache
-
-```bash
-docker compose build --no-cache
-```
-
-- Verificar containers ativos
-
-```bash
-docker ps
-```
-
-- Ver logs de um serviço
-
-```bash
-docker logs authservice
-```
-
-- Testar comunicação entre containers
-
-```bash
-docker exec -it frontend ping authservice
-```
+---
 
 ## 🔒 Observações Técnicas
+- ✅ Node.js: versão mínima recomendada: 18+
 
-- **Node.js:** Versão mínima recomendada: **v18+**
+- ✅ .NET 8 via SDK Docker
 
-> Node 16 não possui suporte nativo ao módulo `crypto` em ESM puro.
+- ✅ CORS no .NET:
 
-- **CORS:** Configurado no `Program.cs` de cada serviço via:
-
-```csharp
+csharp
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 });
 
 app.UseCors("AllowAll");
-```
 
-- **NGINX:** Faz o roteamento interno entre serviços via upstreams configurados no `nginx/nginx.conf`.
+--- 
 
 ## 🧠 Contribuição
-
-1. Crie sua branch:
-
-```bash
+bash
 git checkout -b feature/nova-feature
-```
-
-2. Faça o commit:
-
-```bash
 git commit -m "feat: nova feature"
-```
-
-3. Faça push:
-
-```bash
 git push origin feature/nova-feature
-```
+Abra um Pull Request para a branch dev.
 
-4. Abra um Pull Request para `dev`.
+---
 
 ## 🏆 Autor
+Desenvolvido por Alexandre de Souza Eustáquio
 
-Desenvolvido por **Alexandre de Souza Eustáquio**
+---
 
 ## 📜 Licença
-
-Este projeto está sob licença **MIT**.
+Este projeto está sob licença MIT.
